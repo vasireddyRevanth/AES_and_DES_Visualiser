@@ -1,32 +1,61 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>DES & AES Round Dance – Phase 1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <h1>DES / AES Bit Jumbler</h1>
-
-  <div class="controls">
-    <button id="desBtn" class="cipher-btn active">DES</button>
-    <button id="aesBtn" class="cipher-btn">AES</button>
-  </div>
-
-  <label>
-    Round
-    <input type="range" id="roundSlider" min="0" max="16" value="0" />
-    <span id="roundLbl">0</span>
-  </label>
-
-  <!-- 8×8 grid (64 bit) -->
-  <svg id="bitGrid" width="256" height="256"></svg>
-
-  <!-- avalanche mini-chart -->
-  <svg id="avalancheChart" width="300" height="100"></svg>
-
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  <script src="main.js"></script>
-</body>
-</html>
+:root {
+    --bg: #111;
+    --cell0: #222;
+    --cell1: #0ff;
+    --text: #eee;
+    --accent: #ff0;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, Arial;
+}
+body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+}
+h1 {
+    margin-bottom: 0.5em;
+    font-size: 1.8rem;
+}
+.controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.cipher-btn {
+    background: #333;
+    border: 1px solid #555;
+    color: var(--text);
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cipher-btn.active {
+    background: var(--accent);
+    color: #000;
+}
+label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+input[type="range"] {
+    width: 200px;
+}
+#bitGrid {
+    margin-bottom: 1rem;
+}
+#avalancheChart {
+    border: 1px solid #333;
+    border-radius: 4px;
+}
