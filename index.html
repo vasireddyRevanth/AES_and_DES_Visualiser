@@ -2,74 +2,31 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>DES & AES Round-by-Round Dance</title>
-        <style>
-            body {
-                font-family: system-ui;
-                <!doctype html>
-                <html lang="en">
-                <head>
-                  <meta charset="utf-8" />
-                  <title>DES & AES Round Dance – Phase 1</title>
-                  <meta name="viewport" content="width=device-width, initial-scale=1" />
-                  <link rel="stylesheet" href="styles.css" />
-                </head>
-                <body>
-                  <h1>DES / AES Bit Jumbler</h1>
-
-                  <div class="controls">
-                    <button id="desBtn" class="cipher-btn active">DES</button>
-                    <button id="aesBtn" class="cipher-btn">AES</button>
-                  </div>
-
-                  <label>
-                    Round
-                    <input type="range" id="roundSlider" min="0" max="16" value="0" />
-                    <span id="roundLbl">0</span>
-                  </label>
-
-                  <!-- 8×8 grid (64 bit) -->
-                  <svg id="bitGrid" width="256" height="256"></svg>
-
-                  <!-- avalanche mini-chart -->
-                  <svg id="avalancheChart" width="300" height="100"></svg>
-
-                  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-                  <script src="main.js"></script>
-                </body>
-                </html>
-                align-items: center;
-
-                stroke: #444;
-            }
-            #grid rect {
-                transition: fill 0.2s;
-            }
-            .avalanche path {
-                fill: none;
-                stroke: #0ff;
-                stroke-width: 2;
-            }
-
+        <title>DES & AES Round Dance – Phase 1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
-        <h1>DES / AES Round Dance</h1>
-        <div>
-            <button id="desBtn">DES</button>
-            <button id="aesBtn">AES</button>
+        <h1>DES / AES Bit Jumbler</h1>
+
+        <div class="controls">
+            <button id="desBtn" class="cipher-btn active">DES</button>
+            <button id="aesBtn" class="cipher-btn">AES</button>
         </div>
-        <input type="range" id="roundSlider" min="0" max="16" value="0" />
-        <span id="roundLbl">Round 0</span>
 
-        <!-- 8×8 grid for 64-bit block -->
-        <svg id="grid" width="240" height="240"></svg>
+        <label>
+            Round
+            <input type="range" id="roundSlider" min="0" max="16" value="0" />
+            <span id="roundLbl">0</span>
+        </label>
 
-        <!-- avalanche chart -->
-        <svg id="avalanche" width="320" height="120"></svg>
+        <!-- 8×8 grid (64 bit) -->
+        <svg id="bitGrid" width="256" height="256"></svg>
 
-        <!-- D3 -->
+        <!-- avalanche mini-chart -->
+        <svg id="avalancheChart" width="300" height="100"></svg>
+
         <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-        <script src="crypto-engine.js"></script>
-        <script src="app.js"></script>
+        <script src="main.js"></script>
     </body>
 </html>
