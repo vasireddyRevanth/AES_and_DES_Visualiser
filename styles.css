@@ -89,3 +89,8 @@ input[type="range"] {
     font-family: monospace;
     color: var(--accent);
 }
+/* byte-cell text contrast */
+.byte text {
+    fill: #000;
+    font-weight: bold;
+}

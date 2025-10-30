@@ -1,37 +1,50 @@
-/* ========== PHASE 2 : passphrase → fake 64-bit seed ========== */
+import { deriveKey, singleRound } from "./crypto-engine.js";
+
+/* ---------- grid setup ---------- */
 const cellSize = 32;
 const svg = d3.select("#bitGrid");
+const hue = d3.scaleSequential(d3.interpolateRainbow).domain([0, 8]);
+
 const cells = svg
-  .selectAll("g.cell")
-  .data(d3.range(64))
+  .selectAll("g.byte")
+  .data(d3.range(8))
   .join("g")
-  .attr("class", "cell")
+  .attr("class", "byte")
   .attr(
     "transform",
     (d, i) =>
-      `translate(${(i % 8) * cellSize},${Math.floor(i / 8) * cellSize})`,
+      `translate(${(i % 4) * (cellSize * 2)},${Math.floor(i / 4) * (cellSize * 2)})`,
   );
+
 cells
   .append("rect")
-  .attr("width", cellSize - 2)
-  .attr("height", cellSize - 2)
-  .attr("rx", 3)
-  .attr("fill", "#222");
+  .attr("width", cellSize * 2 - 2)
+  .attr("height", cellSize * 2 - 2)
+  .attr("rx", 4);
+cells
+  .append("text")
+  .attr("x", cellSize)
+  .attr("y", cellSize + 5)
+  .attr("text-anchor", "middle")
+  .style("font-size", "14px")
+  .style("pointer-events", "none");
 
-function draw64(n) {
-  const bits = n.toString(2).padStart(64, "0").split("").map(Number);
-  cells
-    .select("rect")
-    .data(bits)
-    .attr("fill", (d) => (d ? "#0ff" : "#222"));
+/* draw 8 bytes */
+function drawBytes(u8) {
+  cells.each(function (d, i) {
+    const g = d3.select(this);
+    g.select("rect").attr("fill", hue(i));
+    g.select("text").text(
+      "0x" + u8[i].toString(16).padStart(2, "0").toUpperCase(),
+    );
+  });
 }
 
-/* ---- new: passphrase handling ---- */
+/* ---------- passphrase handling ---------- */
 const passInput = d3.select("#passInput");
 const deriveBtn = d3.select("#deriveBtn");
-const keySpan = d3.select("#keyDisplay span");
-
-let derivedKey = 0x0123456789abcdefn; // default until user derives
+let currentBytes = new Uint8Array(8);
+let roundKeys = []; // 16 × 8-byte keys
 
 deriveBtn.on("click", () => {
   const phrase = passInput.property("value");
@@ -39,27 +52,53 @@ deriveBtn.on("click", () => {
     alert("Enter a passphrase");
     return;
   }
-  // PHASE-2 STUB: fake 64-bit hex from first 16 chars of SHA-256
-  const seed = phrase
-    .split("")
-    .reduce((a, c) => ((a << 5) - a + c.charCodeAt(0)) & 0xffffffff, 0);
-  derivedKey = BigInt(
-    "0x" + Math.abs(seed).toString(16).padStart(16, "0").slice(0, 16),
-  );
-  keySpan.text("0x" + derivedKey.toString(16).padStart(16, "0"));
-  draw64(derivedKey); // show the key bits instantly
+  currentBytes = deriveKey(phrase, "DES", 8);
+  roundKeys = [];
+  for (let r = 0; r < 16; r++) roundKeys.push(deriveKey(phrase + r, "DES", 8));
+  drawBytes(currentBytes);
+  slider.property("value", 0).dispatch("input");
 });
 
-/* ---- slider still dummy random ---- */
+/* ---------- round slider ---------- */
 const slider = d3.select("#roundSlider");
 const lbl = d3.select("#roundLbl");
 slider.on("input", () => {
   const r = +slider.property("value");
   lbl.text(r);
-  let dummy = derivedKey;
-  for (let i = 0; i < r; i++)
-    dummy = BigInt("0x" + Math.random().toString(16).slice(2, 18));
-  draw64(dummy);
+  let blk = new Uint8Array(currentBytes);
+  let totAval = 0;
+  for (let i = 0; i < r; i++) {
+    const res = singleRound(blk, roundKeys[i], "DES", i);
+    blk = res.newBytes;
+    totAval += res.avalancheBits;
+  }
+  drawBytes(blk);
+  updateAvalChart(r, totAval);
 });
+
+/* ---------- tiny avalanche chart ---------- */
+const avSvg = d3.select("#avalancheChart");
+const avMargin = { top: 5, right: 5, bottom: 20, left: 25 };
+const w = 300 - avMargin.left - avMargin.right;
+const h = 100 - avMargin.top - avMargin.bottom;
+const g = avSvg
+  .append("g")
+  .attr("transform", `translate(${avMargin.left},${avMargin.top})`);
+const x = d3.scaleLinear().domain([0, 16]).range([0, w]);
+const y = d3.scaleLinear().domain([0, 64]).range([h, 0]);
+const line = d3
+  .line()
+  .x((d) => x(d.r))
+  .y((d) => y(d.bits));
+g.append("path")
+  .attr("fill", "none")
+  .attr("stroke", "#0ff")
+  .attr("stroke-width", 2);
+const avalData = [{ r: 0, bits: 0 }];
+function updateAvalChart(r, bits) {
+  avalData.push({ r, bits });
+  g.select("path").datum(avalData).attr("d", line);
+}
+
 /* init */
-draw64(derivedKey);
+drawBytes(currentBytes);
