@@ -1,8 +1,6 @@
-/* ========== PHASE 1 : only visuals, zero crypto ========== */
-const cellSize = 32; // 8*32 = 256 px
+/* ========== PHASE 2 : passphrase → fake 64-bit seed ========== */
+const cellSize = 32;
 const svg = d3.select("#bitGrid");
-
-/* build 8×8 cells once */
 const cells = svg
   .selectAll("g.cell")
   .data(d3.range(64))
@@ -18,9 +16,8 @@ cells
   .attr("width", cellSize - 2)
   .attr("height", cellSize - 2)
   .attr("rx", 3)
-  .attr("fill", "#222"); // default = 0
+  .attr("fill", "#222");
 
-/* draw 64-bit BigInt */
 function draw64(n) {
   const bits = n.toString(2).padStart(64, "0").split("").map(Number);
   cells
@@ -29,17 +26,40 @@ function draw64(n) {
     .attr("fill", (d) => (d ? "#0ff" : "#222"));
 }
 
-/* ===== slider : dummy random block ===== */
+/* ---- new: passphrase handling ---- */
+const passInput = d3.select("#passInput");
+const deriveBtn = d3.select("#deriveBtn");
+const keySpan = d3.select("#keyDisplay span");
+
+let derivedKey = 0x0123456789abcdefn; // default until user derives
+
+deriveBtn.on("click", () => {
+  const phrase = passInput.property("value");
+  if (!phrase) {
+    alert("Enter a passphrase");
+    return;
+  }
+  // PHASE-2 STUB: fake 64-bit hex from first 16 chars of SHA-256
+  const seed = phrase
+    .split("")
+    .reduce((a, c) => ((a << 5) - a + c.charCodeAt(0)) & 0xffffffff, 0);
+  derivedKey = BigInt(
+    "0x" + Math.abs(seed).toString(16).padStart(16, "0").slice(0, 16),
+  );
+  keySpan.text("0x" + derivedKey.toString(16).padStart(16, "0"));
+  draw64(derivedKey); // show the key bits instantly
+});
+
+/* ---- slider still dummy random ---- */
 const slider = d3.select("#roundSlider");
 const lbl = d3.select("#roundLbl");
 slider.on("input", () => {
   const r = +slider.property("value");
   lbl.text(r);
-  /* dummy: more rounds → more random */
-  let dummy = 0x0123456789abcdefn;
+  let dummy = derivedKey;
   for (let i = 0; i < r; i++)
     dummy = BigInt("0x" + Math.random().toString(16).slice(2, 18));
   draw64(dummy);
 });
 /* init */
-draw64(0x0123456789abcdefn);
+draw64(derivedKey);

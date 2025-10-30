@@ -59,3 +59,33 @@ input[type="range"] {
     border: 1px solid #333;
     border-radius: 4px;
 }
+.key-box {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.key-box input {
+    flex: 1;
+    padding: 0.4em;
+    border: 1px solid #555;
+    background: #222;
+    color: var(--text);
+    border-radius: 4px;
+}
+.key-box button {
+    background: #333;
+    border: 1px solid #555;
+    color: var(--text);
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.key-box button:hover {
+    background: #444;
+}
+#keyDisplay {
+    margin-top: 0.3rem;
+    font-family: monospace;
+    color: var(--accent);
+}
