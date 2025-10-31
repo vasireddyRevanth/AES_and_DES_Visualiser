@@ -45,8 +45,10 @@ const passInput = d3.select("#passInput");
 const deriveBtn = d3.select("#deriveBtn");
 let currentBytes = new Uint8Array(8);
 let roundKeys = []; // 16 × 8-byte keys
+console.log("main.js loaded");
 
 deriveBtn.on("click", () => {
+  console.log("clicked");
   const phrase = passInput.property("value");
   if (!phrase) {
     alert("Enter a passphrase");
@@ -102,3 +104,5 @@ function updateAvalChart(r, bits) {
 
 /* init */
 drawBytes(currentBytes);
+/* ---------- run once so slider starts at round 0 ---------- */
+slider.dispatch("input");
