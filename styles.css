@@ -1,12 +1,29 @@
-body {
-    font-family: system-ui, sans-serif;
-    background: #f8fafc;
-    margin: 20px;
-    color: #0f172a;
+/* === Base === */
+:root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --text: #f8fafc;
+    --accent: #6366f1;
+    --accent-light: #a5b4fc;
+    --border: #334155;
 }
 
+body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 20px;
+}
+
+/* === Layout === */
 header {
     margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent-light);
 }
 
 .controls {
@@ -19,14 +36,28 @@ header {
 input,
 select,
 button {
-    padding: 8px;
+    padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    background: #fff;
+    border: 1px solid var(--border);
+    background: #1e293b;
+    color: var(--text);
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid var(--accent);
 }
 
 button {
     cursor: pointer;
+    background: var(--accent);
+    border: none;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--accent-light);
+    color: var(--bg);
 }
 
 .layout {
@@ -36,40 +67,46 @@ button {
 }
 
 .panel {
-    background: white;
+    background: var(--panel);
     border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-    min-width: 300px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     flex: 1;
+    min-width: 300px;
 }
 
+/* === Visualization grid === */
 .vis {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 14px;
 }
 
 .byte {
-    height: 48px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    background: #f1f5f9;
+    border-radius: 10px;
+    background: #334155;
+    border: 1px solid var(--border);
     font-weight: bold;
-    border: 1px solid #cbd5e1;
+    font-family: monospace;
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
 }
 
 .byte.highlight {
-    background: #e0e7ff;
-    border-color: #6366f1;
+    background: var(--accent);
+    transform: scale(1.08);
 }
 
+/* === Info & logs === */
 .step-info {
     font-size: 13px;
-    color: #475569;
+    color: #cbd5e1;
     margin-top: 8px;
 }
 
@@ -80,35 +117,48 @@ button {
     margin-top: 12px;
 }
 
-.round {
-    margin-top: 10px;
-}
-
 .hexout {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 8px;
+    font-family: monospace;
 }
 
 .log {
-    background: #0f172a;
-    color: #e2e8f0;
-    padding: 8px;
+    background: #0a0e1a;
+    color: #cbd5e1;
+    padding: 10px;
     border-radius: 8px;
     font-family: monospace;
     font-size: 13px;
-    min-height: 100px;
+    min-height: 120px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid var(--border);
 }
 
-.small {
-    font-size: 13px;
-    color: #64748b;
+/* === Progress bar === */
+.progress-container {
+    width: 100%;
+    background: #1e293b;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
 }
 
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+}
+
+/* === Footer === */
 footer {
     margin-top: 20px;
     font-size: 13px;
-    color: #64748b;
+    color: #94a3b8;
     text-align: center;
 }

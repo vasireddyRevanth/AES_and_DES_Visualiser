@@ -1,9 +1,15 @@
 // ===== Utility =====
-const textToBytes = (str) =>
-  Array.from(new TextEncoder().encode(str)).slice(0, 16);
+const textToBytes = (str) => {
+  const arr = Array.from(new TextEncoder().encode(str));
+  // pad or trim to 16 bytes
+  while (arr.length < 16) arr.push(0);
+  return arr.slice(0, 16);
+};
+
 const bytesToHex = (arr) =>
-  arr.map((b) => b.toString(16).padStart(2, "0")).join(" ");
-const xorArrays = (a, b) => a.map((v, i) => v ^ b[i % b.length]);
+  arr.map((b) => ((b ?? 0) & 0xff).toString(16).padStart(2, "0")).join(" ");
+
+const xorArrays = (a, b) => a.map((v, i) => (v ?? 0) ^ (b[i % b.length] ?? 0));
 
 // ===== AES-like (educational) =====
 const SBOX = [
@@ -75,6 +81,7 @@ function feistelRound(L, R, key, round) {
 
 // ===== Visualization state =====
 let steps = [];
+let prevState = null;
 let currentStep = 0;
 let playInterval = null;
 
@@ -82,12 +89,21 @@ function showState(state, title) {
   const grid = document.getElementById("stateGrid");
   grid.innerHTML = "";
   document.getElementById("stateTitle").textContent = title;
-  state.forEach((b) => {
+
+  state.forEach((b, i) => {
     const div = document.createElement("div");
     div.className = "byte";
     div.textContent = b.toString(16).padStart(2, "0").toUpperCase();
+
+    // highlight if value changed from previous step
+    if (prevState && prevState[i] !== b) {
+      div.classList.add("highlight");
+      setTimeout(() => div.classList.remove("highlight"), 600);
+    }
     grid.appendChild(div);
   });
+
+  prevState = [...state];
 }
 
 function logMsg(msgs) {
@@ -139,6 +155,7 @@ function generateSteps() {
 
   document.getElementById("stepCounter").textContent = "0";
   logMsg(["Ready. Click Next to begin visualization."]);
+  updateProgress();
 }
 
 function nextStep() {
@@ -148,6 +165,8 @@ function nextStep() {
     logMsg(s.log);
     currentStep++;
     document.getElementById("stepCounter").textContent = currentStep;
+    updateProgress();
+
     if (currentStep === steps.length) {
       logMsg(["--- Encryption Complete ---"]);
       const hexOut = document.getElementById("hexOut");
@@ -162,6 +181,7 @@ function prevStep() {
     const s = steps[currentStep];
     showState(s.state, s.title);
     document.getElementById("stepCounter").textContent = currentStep;
+    updateProgress();
   }
 }
 
@@ -172,6 +192,11 @@ function playSteps() {
     if (currentStep < steps.length) nextStep();
     else pausePlay();
   }, 800);
+}
+
+function updateProgress() {
+  let pct = (currentStep / steps.length) * 100;
+  document.querySelector(".progress-bar").style.width = pct + "%";
 }
 
 function pausePlay() {

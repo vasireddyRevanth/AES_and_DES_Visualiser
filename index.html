@@ -3,74 +3,48 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>AES / DES Step Visualizer</title>
+        <title>AES & DES Visualizer</title>
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
         <header>
-            <h1>AES / DES Step Visualizer — Educational</h1>
+            <h1>AES / DES Encryption Visualizer</h1>
         </header>
 
         <div class="controls">
-            <label
-                >Plaintext:
-                <input id="textInput" type="text" value="Hello AES/DES!"
-            /></label>
-            <label
-                >Key: <input id="keyInput" type="text" value="mysecretkey12345"
-            /></label>
-            <label
-                >Cipher:
-                <select id="cipherSelect">
-                    <option value="aes">AES-like</option>
-                    <option value="des">DES-like</option>
-                </select>
-            </label>
-            <label
-                >Rounds:
-                <select id="roundCount">
-                    <option value="4">4</option>
-                    <option value="8" selected>8</option>
-                    <option value="10">10</option>
-                </select>
-            </label>
-            <button id="startBtn">Start</button>
+            <input
+                type="text"
+                id="inputText"
+                placeholder="Enter text to encrypt"
+            />
+            <select id="algoSelect">
+                <option value="aes">AES</option>
+                <option value="des">DES</option>
+            </select>
+            <button onclick="generateSteps()">Start Visualization</button>
         </div>
 
-        <main class="layout">
-            <div class="panel">
-                <strong>State Visualization</strong>
-                <div id="stateTitle" class="step-info">Press Start</div>
-                <div id="stateGrid" class="vis"></div>
+        <div class="panel">
+            <h2 id="stateTitle">Encryption Rounds</h2>
+            <div id="roundsContainer"></div>
 
-                <div class="controls-row">
-                    <button id="prevBtn">Prev</button>
-                    <button id="nextBtn">Next</button>
-                    <button id="playBtn">Play</button>
-                    <button id="pauseBtn" disabled>Pause</button>
-                    <button id="resetBtn">Reset</button>
-                    <div class="small">
-                        Step: <span id="stepCounter">0</span>
-                    </div>
-                </div>
-
-                <div id="roundInfo" class="round"></div>
-                <div id="stepInfoText" class="step-info"></div>
+            <div class="progress-container">
+                <div class="progress-bar"></div>
             </div>
 
-            <div class="panel">
-                <strong>Hex / Output</strong>
-                <div id="hexOut" class="hexout"></div>
-                <div id="logArea" class="log"></div>
+            <div class="controls-row">
+                <button onclick="prevStep()">⟵ Prev</button>
+                <span>Round: <span id="stepCounter">0</span></span>
+                <button onclick="nextStep()">Next ⟶</button>
             </div>
-        </main>
+        </div>
 
-        <footer>
-            <p>
-                This tool visualizes AES-like and DES-like encryption steps for
-                learning purposes only.
-            </p>
-        </footer>
+        <div class="panel">
+            <h2>Log</h2>
+            <div id="log" class="log"></div>
+        </div>
+
+        <footer>AES/DES Visualizer — made with ❤️</footer>
 
         <script src="script.js"></script>
     </body>
